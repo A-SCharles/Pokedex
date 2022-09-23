@@ -6,13 +6,34 @@
           <div class="row p-5">
             <div class="col-md-8">
               <img
+                v-if="
+                  pokemon.data.sprites.other['official-artwork'].front_default
+                "
                 class="img-fluid"
-                :src="pokemon.data.sprites.other['official-artwork'].front_default"
-                :alt="pokemon.data.sprites.other['official-artwork'].front_default"
+                :src="
+                  pokemon.data.sprites.other['official-artwork'].front_default
+                "
+                :alt="
+                  pokemon.data.sprites.other['official-artwork'].front_default
+                "
+              />
+              <img
+                v-else-if="pokemon.data.sprites.other['home'].front_default"
+                class="img-fluid"
+                :src="pokemon.data.sprites.other['home'].front_default"
+                :alt="pokemon.data.sprites.other['home'].front_default"
+              />
+              <img
+                v-else-if="pokemon.data.sprites.front_shiny"
+                class="img-fluid"
+                :src="pokemon.data.sprites.front_shiny"
+                :alt="pokemon.data.sprites.front_shiny"
               />
               <h2>{{ pokemon.data.name }}</h2>
-              <h2>{{ pokemon.data.id }}</h2>
+              <p>{{ pokemon.data.bar.flavor_text_entries[0].flavor_text }}</p>
+              <h2>#{{ pokemon.data.id }}</h2>
             </div>
+
             <div class="col-md-4">
               <!-- stats -->
               <div class="row my-3 py-3 shadow rounded-5 stats">
@@ -54,13 +75,16 @@
               <!-- abilities -->
               <div class="row my-3 py-3 shadow rounded-5">
                 <h3>Ability :</h3>
-                <p
-                  class="col-md-6 mx-auto"
+                <button 
+                  class="btn col-md-6 mx-auto"
                   v-for="ability in pokemon.data.abilities"
                   :key="ability"
+                  data-bs-toggle="modal" 
+                  :data-bs-target="'#effect' + ability.ability.name"
+                  @click="this.$store.dispatch('getAbility', ability)"
                 >
                   {{ ability.ability.name }}
-                </p>
+                </button>
               </div>
 
               <!-- Evolution -->
@@ -86,11 +110,29 @@
             </div>
           </div>
           <div class="m-5 d-flex justify-content-between">
-            <button @click="previous" class="btn btn-warning">Previous</button>
+            <button
+              v-if="pokemon.data.id > 1"
+              @click="previous"
+              class="btn btn-warning"
+            >
+              Previous
+            </button>
 
-            <button @click="next" class="btn btn-warning">Next</button>
+            <button
+              v-if="pokemon.data.id <= 10248"
+              @click="next"
+              class="btn btn-warning"
+            >
+              Next
+            </button>
           </div>
         </div>
+        <!-- modals -->
+        <Effect
+          v-for="ability in pokemon.data.abilities"
+          :key="ability"
+          :ability="ability"
+        />
       </div>
       <div v-else>
         <Loader />
@@ -102,6 +144,7 @@
 <script>
 import Loader from "@/components/loader.vue";
 import router from "@/router";
+import Effect from "@/components/effect.vue";
 export default {
   props: ["id"],
   computed: {
@@ -126,10 +169,11 @@ export default {
       let data = await res.json();
 
       this.$store.dispatch("getDetails", parseInt(data.id));
-      router.push({ name: "single", params: { id: parseInt(data.id)}});
+      router.push({ name: "single", params: { id: parseInt(data.id) } });
     },
+
   },
-  components: { Loader },
+  components: { Loader, Effect },
 };
 </script>
 
@@ -140,12 +184,6 @@ export default {
 .card {
   min-height: 100%;
   width: fit-content;
-}
-
-.img-fluid {
-  height: 100%;
-  /* width: 500px; */
-  object-fit: cover;
 }
 
 .stats .col-md-6:nth-child(2) .progress-bar {
