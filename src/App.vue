@@ -1,5 +1,5 @@
 <template>
-  <nav>
+  <nav class="sticky-top bg-light">
     <router-link to="/">Home</router-link> |
     <router-link to="/about">About</router-link> |
     <router-link to="/allPokemon">All Pokemon</router-link>

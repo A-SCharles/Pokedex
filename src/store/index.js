@@ -22,7 +22,7 @@ export default createStore({
   actions: {
     getAllPokemon: async (context) => {
       let pokemon = []
-      let res = await fetch('https://pokeapi.co/api/v2/pokemon?limit=100000&offset=0')
+      let res = await fetch('https://pokeapi.co/api/v2/pokemon?limit=10000&offset=0')
       let all = await res.json()
       // console.log(all.results);
 
@@ -52,30 +52,39 @@ export default createStore({
         evolvesfrom = final.evolves_from_species.name
       }
 
-      let ch = await fetch(final.evolution_chain.url)
-      let cahin = await ch.json()
-      console.log(cahin);
-      let evolvesto = null
+      if (final.evolution_chain != null) {
+        var ch = await fetch(final.evolution_chain.url)
+        var cahin = await ch.json()
+        console.log(cahin);
+        var evolvesto = null
 
-      if ((cahin.chain.evolves_to[0].species.name != evolvesfrom)) {
-        evolvesto = cahin.chain.evolves_to[0].species.name
-      }
-      // console.log(cahin.chain.evolves_to[0]);
+        if ((cahin.chain.evolves_to[0].species.name != evolvesfrom)) {
+          evolvesto = cahin.chain.evolves_to[0].species.name
+        }
+        // console.log(cahin.chain.evolves_to[0]);
 
-      if ((cahin.chain.evolves_to[0].species.name === data.name)) {
-        if (cahin.chain.evolves_to[0].evolves_to[0] === undefined) {
-          evolvesto = null
-        } else {
+        if ((cahin.chain.evolves_to[0].species.name === data.name)) {
+          if (cahin.chain.evolves_to[0].evolves_to[0] === undefined) {
+            evolvesto = null
+          } else {
 
-          evolvesto = cahin.chain.evolves_to[0].evolves_to[0].species.name
+            evolvesto = cahin.chain.evolves_to[0].evolves_to[0].species.name
+          }
         }
       }
+
 
       context.commit('SetPokemon', {
         data,
         evolvesfrom,
         evolvesto
       })
+    },
+
+    getRegion : async (context) => {
+      let res = await fetch('https://pokeapi.co/api/v2/pokemon?limit=10000&offset=0')
+      let all = await res.json()
+      // console.log(all.results);
     }
 
   },

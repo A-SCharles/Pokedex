@@ -1,18 +1,19 @@
 <template>
   <section id="pokemon">
-    <div class="container">
+    <div class="container p-2">
       <div v-if="pokemon" class="row">
-        <div class="card p-5">
-          <div class="row">
-            <div class="col-md-6">
+        <div class="card">
+          <div class="row p-5">
+            <div class="col-md-8">
               <img
                 class="img-fluid"
-                :src="pokemon.data.sprites.front_default"
-                :alt="pokemon.data.sprites.front_default"
+                :src="pokemon.data.sprites.other['official-artwork'].front_default"
+                :alt="pokemon.data.sprites.other['official-artwork'].front_default"
               />
               <h2>{{ pokemon.data.name }}</h2>
+              <h2>{{ pokemon.data.id }}</h2>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-4">
               <!-- stats -->
               <div class="row my-3 py-3 shadow rounded-5 stats">
                 <h3>Stats :</h3>
@@ -37,16 +38,6 @@
                   </p>
                 </div>
               </div>
-              <!-- <div class="row my-3 py-3 shadow rounded-5">
-                <h3>Stats : </h3>
-                <p
-                  class="col-md-6"
-                  v-for="stat in pokemon.data.stats"
-                  :key="stat"
-                >
-                  {{ stat.stat.name }}: <span>{{ stat.base_stat }}</span>
-                </p>
-              </div> -->
 
               <!-- types -->
               <div class="row my-3 py-3 shadow rounded-5">
@@ -80,27 +71,37 @@
                 <h3>Evolution :</h3>
                 <div class="col-md-6" v-if="pokemon.evolvesfrom">
                   <p>Evolves From :</p>
-                  <p>
+                  <p class="btn" @click="to(pokemon.evolvesfrom)">
                     {{ pokemon.evolvesfrom }}
                   </p>
                 </div>
 
                 <div class="col-md-6" v-if="pokemon.evolvesto">
                   <p>Evolves To :</p>
-                  <p>
+                  <p class="btn" @click="to(pokemon.evolvesto)">
                     {{ pokemon.evolvesto }}
                   </p>
                 </div>
               </div>
             </div>
           </div>
+          <div class="m-5 d-flex justify-content-between">
+            <button @click="previous" class="btn btn-warning">Previous</button>
+
+            <button @click="next" class="btn btn-warning">Next</button>
+          </div>
         </div>
+      </div>
+      <div v-else>
+        <Loader />
       </div>
     </div>
   </section>
 </template>
 
 <script>
+import Loader from "@/components/loader.vue";
+import router from "@/router";
 export default {
   props: ["id"],
   computed: {
@@ -111,6 +112,24 @@ export default {
   mounted() {
     this.$store.dispatch("getDetails", this.id);
   },
+  methods: {
+    next() {
+      this.$store.dispatch("getDetails", parseInt(this.id) + 1);
+      router.push({ name: "single", params: { id: parseInt(this.id) + 1 } });
+    },
+    previous() {
+      this.$store.dispatch("getDetails", parseInt(this.id) - 1);
+      router.push({ name: "single", params: { id: parseInt(this.id) - 1 } });
+    },
+    async to(pokemon) {
+      let res = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemon}/`);
+      let data = await res.json();
+
+      this.$store.dispatch("getDetails", parseInt(data.id));
+      router.push({ name: "single", params: { id: parseInt(data.id)}});
+    },
+  },
+  components: { Loader },
 };
 </script>
 
@@ -125,16 +144,15 @@ export default {
 
 .img-fluid {
   height: 100%;
-  width: 500px;
+  /* width: 500px; */
   object-fit: cover;
 }
 
-
-.stats .col-md-6:nth-child(2) .progress-bar{
+.stats .col-md-6:nth-child(2) .progress-bar {
   background-color: green;
 }
 
-.stats .progress-bar{
+.stats .progress-bar {
   background-color: blue;
 }
 /* 
