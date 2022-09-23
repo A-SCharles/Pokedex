@@ -18,7 +18,13 @@ const routes = [{
     path: '/allPokemon',
     name: 'allPokemon',
     component: () => import('../views/allPokemon.vue')
-  }
+  },
+  {
+    path: '/allPokemon/:id',
+    name: 'single',
+    component: () => import('../views/pokemon.vue'),
+    props : true
+  },
 ]
 
 const router = createRouter({

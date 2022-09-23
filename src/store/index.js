@@ -5,38 +5,79 @@ import {
 export default createStore({
   state: {
     allPokemon: null,
-    Pokemon: null,
+    pokemon: null,
   },
   getters: {},
   mutations: {
     SetAllPokemon: (state, allPokemon) => {
       state.allPokemon = allPokemon
-      console.log(allPokemon);
+      // console.log(allPokemon[0]);
     },
-    SetPokemon: (state, Pokemon) => {
-      state.Pokemon = Pokemon
+    SetPokemon: (state, pokemon) => {
+      state.pokemon = pokemon
+      // console.log(Pokemon[1].chain.evolves_to[0].species.name);
+      console.log(pokemon);
     },
   },
   actions: {
     getAllPokemon: async (context) => {
       let pokemon = []
-      await fetch('https://pokeapi.co/api/v2/pokemon?limit=100&offset=0')
-        .then((res) => res.json())
-        .then((all) => {
-          // console.log(data.results);
-          // context.commit('SetAllPokemon' , data.results)
-          for (let i = 0; i < all.results.length; i++) {
-            fetch(`https://pokeapi.co/api/v2/pokemon/${all.results[i].name}`)
-              .then((res) => res.json())
-              .then((data) => {
-                pokemon.push(data)
-                if (i === all.results.length -1) {
-                  context.commit('SetAllPokemon', pokemon)
-                }
-              })
-          }
-        })
+      let res = await fetch('https://pokeapi.co/api/v2/pokemon?limit=100000&offset=0')
+      let all = await res.json()
+      // console.log(all.results);
+
+      for (let i = 0; i < all.results.length; i++) {
+        let details = await fetch(`https://pokeapi.co/api/v2/pokemon/${all.results[i].name}`)
+        let data = await details.json()
+        pokemon.push(data)
+        if (i === all.results.length - 1) {
+          // console.log(pokemon);
+          context.commit('SetAllPokemon', pokemon)
+        }
+      }
     },
+    getDetails: async (context, pokemon) => {
+      // console.log(pokemon);
+
+      let res = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemon}/`)
+      let data = await res.json()
+      console.log(data);
+
+      let evo = await fetch(data.species.url)
+      let final = await evo.json()
+      console.log(final);
+      let evolvesfrom = null
+
+      if (final.evolves_from_species != null) {
+        evolvesfrom = final.evolves_from_species.name
+      }
+
+      let ch = await fetch(final.evolution_chain.url)
+      let cahin = await ch.json()
+      console.log(cahin);
+      let evolvesto = null
+
+      if ((cahin.chain.evolves_to[0].species.name != evolvesfrom)) {
+        evolvesto = cahin.chain.evolves_to[0].species.name
+      }
+      // console.log(cahin.chain.evolves_to[0]);
+
+      if ((cahin.chain.evolves_to[0].species.name === data.name)) {
+        if (cahin.chain.evolves_to[0].evolves_to[0] === undefined) {
+          evolvesto = null
+        } else {
+
+          evolvesto = cahin.chain.evolves_to[0].evolves_to[0].species.name
+        }
+      }
+
+      context.commit('SetPokemon', {
+        data,
+        evolvesfrom,
+        evolvesto
+      })
+    }
+
   },
   modules: {}
 })
