@@ -75,11 +75,11 @@
               <!-- abilities -->
               <div class="row my-3 py-3 shadow rounded-5">
                 <h3>Ability :</h3>
-                <button 
+                <button
                   class="btn col-md-6 mx-auto"
                   v-for="ability in pokemon.data.abilities"
                   :key="ability"
-                  data-bs-toggle="modal" 
+                  data-bs-toggle="modal"
                   :data-bs-target="'#effect' + ability.ability.name"
                   @click="this.$store.dispatch('getAbility', ability)"
                 >
@@ -109,6 +109,26 @@
               </div>
             </div>
           </div>
+
+          <!-- varieties -->
+          <div class="row" v-if="pokemon.data.bar.varieties.length > 1">
+            <h3>Varieties</h3>
+
+            <div
+              @click="to(pokemon.pokemon.name)"
+              class="card m-3 btn mx-auto"
+              v-for="(pokemon, index) in pokemon.data.bar.varieties"
+              :key="index"
+            >
+              <img
+                class="my-auto"
+                :src="pokemon.pokemon.sprites.front_default"
+                :alt="pokemon.pokemon.sprites.front_default"
+              />
+              <p class="my-auto">{{ pokemon.pokemon.name }}</p>
+            </div>
+          </div>
+
           <div class="m-5 d-flex justify-content-between">
             <button
               v-if="pokemon.data.id > 1"
@@ -157,21 +177,23 @@ export default {
   },
   methods: {
     next() {
+      this.$store.state.pokemon = null;
       this.$store.dispatch("getDetails", parseInt(this.id) + 1);
       router.push({ name: "single", params: { id: parseInt(this.id) + 1 } });
     },
     previous() {
+      this.$store.state.pokemon = null;
       this.$store.dispatch("getDetails", parseInt(this.id) - 1);
       router.push({ name: "single", params: { id: parseInt(this.id) - 1 } });
     },
     async to(pokemon) {
+      this.$store.state.pokemon = null;
       let res = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemon}/`);
       let data = await res.json();
 
       this.$store.dispatch("getDetails", parseInt(data.id));
       router.push({ name: "single", params: { id: parseInt(data.id) } });
     },
-
   },
   components: { Loader, Effect },
 };
@@ -182,7 +204,7 @@ export default {
   min-height: 100vh;
 }
 .card {
-  min-height: 100%;
+  min-height: fit-content;
   width: fit-content;
 }
 

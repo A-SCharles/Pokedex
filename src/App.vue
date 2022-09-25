@@ -4,8 +4,16 @@
     <router-link to="/about">About</router-link> |
     <router-link to="/allPokemon">All Pokemon</router-link>
   </nav>
-  <router-view/>
+  <router-view />
+  <Footer />
 </template>
+
+<script>
+import Footer from "./components/footer.vue";
+export default {
+  components: { Footer },
+};
+</script>
 
 <style>
 #app {

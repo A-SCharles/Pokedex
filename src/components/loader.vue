@@ -9,10 +9,21 @@
     <span class="circle circle-7"></span>
     <span class="circle circle-8"></span>
   </div>
+
+  <p v-if="count">Loading {{count}} of {{length}}</p>
 </template>
 
 <script>
-export default {};
+export default {
+  computed: {
+    length() {
+      return this.$store.state.length;
+    },
+    count() {
+      return this.$store.state.count;
+    },
+  },
+};
 </script>
 
 <style scoped>

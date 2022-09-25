@@ -119,7 +119,7 @@ export default {
     },
   },
   mounted() {
-    this.$store.dispatch("getAllPokemon");
+    // this.$store.dispatch("getAllPokemon");
     this.$store.state.pokemon = null;
   },
 };
