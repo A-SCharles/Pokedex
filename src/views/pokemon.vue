@@ -30,6 +30,7 @@
                 :alt="pokemon.data.sprites.front_shiny"
               />
               <h2>{{ pokemon.data.name }}</h2>
+              <a :href="pokemon.data.species.url">URL</a>
               <p>{{ pokemon.data.bar.flavor_text_entries[0].flavor_text }}</p>
               <h2>#{{ pokemon.data.id }}</h2>
             </div>

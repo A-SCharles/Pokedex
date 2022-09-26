@@ -70,7 +70,7 @@ export default createStore({
     },
 
     getDetails: async (context, pokemon) => {
-      // console.log(pokemon);
+      console.log(pokemon);
 
       let res = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemon}/`)
       let data = await res.json()
@@ -125,6 +125,14 @@ export default createStore({
         // console.log(data.sprites);
         // varsprites.push(data.sprites)
         final.varieties[i].pokemon.sprites = data.sprites
+      }
+
+      // eevee shit, becuase why not ? 
+      if (pokemon == 133) {
+        console.log(final.evolution_chain.url);
+        let url = await fetch(final.evolution_chain.url)
+        let data = await url.json()
+        console.log(data.chain);
       }
 
       data.bar = final
