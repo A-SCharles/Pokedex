@@ -46,7 +46,7 @@ export default createStore({
   },
   actions: {
     getAllPokemon: async (context) => {
-      // context.state.allPokemon = null;
+      context.state.allPokemon = [];
       // let pokemon = [];
 
       let res = await fetch(
@@ -76,15 +76,12 @@ export default createStore({
           `https://pokeapi.co/api/v2/pokemon/${all.results[i].name}`
         );
         let data = await details.json();
-        let pokemon = []
-        // pokemon.push(data);
-        console.log(context.state.allPokemon);
         context.state.allPokemon.push(data);
       }
     },
 
     getDetails: async (context, pokemon) => {
-      console.log(pokemon);
+      // console.log(pokemon);
 
       let res = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemon}/`);
       let data = await res.json();
@@ -161,11 +158,11 @@ export default createStore({
 
     getRegion: async (context, region) => {
       // console.log(region);
-      context.state.allPokemon = null;
+      context.state.allPokemon = [];
       let pokemon = [];
       let res = await fetch(`https://pokeapi.co/api/v2/pokedex/${region}`);
       let all = await res.json();
-      console.log(all);
+      // console.log(all);
       let leng = all.pokemon_entries.length;
 
       for (let i = 0; i < leng; i++) {
@@ -189,23 +186,50 @@ export default createStore({
           `https://pokeapi.co/api/v2/pokemon/${all.pokemon_entries[i].pokemon_species.name}`
         );
         let data = await details.json();
-        pokemon.push(data);
-        if (i === leng - 1) {
-          console.log(pokemon);
-          context.commit("SetAllPokemon", pokemon);
-        }
+          context.state.allPokemon.push(data);
+          // pokemon.push(data);
+        // if (i === leng - 1) {
+        //   console.log(pokemon);
+        //   context.commit("SetAllPokemon", pokemon);
+        // }
       }
     },
 
     getLegendaries: async (context) => {
-      context.state.allPokemon = null;
+      context.state.allPokemon = [];
 
-      let pokemon = [];
+      // let pokemon = [];
+      // let res = await fetch(
+      //   "https://pokeapi.co/api/v2/pokemon-species?limit=905&offset=0"
+      // );
+      // let all = await res.json();
+      // console.log(all.results);
+
+      // for (let i = 0; i < all.results.length; i++) {
+      //   context.state.count = i;
+      //   context.state.length = all.results.length;
+
+      //   let detail = await fetch(`${all.results[i].url}`);
+      //   let dat = await detail.json();
+      //   // console.log(i);
+
+      //   if (dat.is_legendary === true) {
+      //     let res = await fetch(`https://pokeapi.co/api/v2/pokemon/${dat.id}`);
+      //     let data = await res.json();
+      //     pokemon.push(data);
+      //   }
+
+      //   if (i === all.results.length - 1) {
+      //     // console.log(pokemon);
+      //     // console.log(pokemon[0].species.url);
+      //     context.commit("SetAllPokemon", pokemon);
+      //   }
+      
+      // let pokemon = [];
       let res = await fetch(
         "https://pokeapi.co/api/v2/pokemon-species?limit=905&offset=0"
       );
       let all = await res.json();
-      console.log(all.results);
 
       for (let i = 0; i < all.results.length; i++) {
         context.state.count = i;
@@ -213,25 +237,22 @@ export default createStore({
 
         let detail = await fetch(`${all.results[i].url}`);
         let dat = await detail.json();
-        // console.log(i);
 
         if (dat.is_legendary === true) {
           let res = await fetch(`https://pokeapi.co/api/v2/pokemon/${dat.id}`);
           let data = await res.json();
-          pokemon.push(data);
+          console.log(data)
+          context.state.allPokemon.push(data);
         }
 
-        if (i === all.results.length - 1) {
-          // console.log(pokemon);
-          // console.log(pokemon[0].species.url);
-          context.commit("SetAllPokemon", pokemon);
-        }
+        // if (i === all.results.length - 1) {
+        //   context.commit("SetAllPokemon", pokemon);
+        // }
       }
-      // console.log(pokemon);
     },
 
     getMythicals: async (context) => {
-      context.state.allPokemon = null;
+      context.state.allPokemon = [];
       let pokemon = [];
       let res = await fetch(
         "https://pokeapi.co/api/v2/pokemon-species?limit=905&offset=0"
@@ -245,21 +266,18 @@ export default createStore({
 
         let detail = await fetch(`${all.results[i].url}`);
         let dat = await detail.json();
-        // console.log(i);
 
         if (dat.is_mythical === true) {
           let res = await fetch(`https://pokeapi.co/api/v2/pokemon/${dat.id}`);
           let data = await res.json();
-          pokemon.push(data);
+          context.state.allPokemon.push(data);
+          // pokemon.push(data);
         }
 
-        if (i === all.results.length - 1) {
-          // console.log(pokemon);
-          // console.log(pokemon[0].species.url);
-          context.commit("SetAllPokemon", pokemon);
-        }
+        // if (i === all.results.length - 1) {
+        //   context.commit("SetAllPokemon", pokemon);
+        // }
       }
-      // console.log(pokemon);
     },
 
     getAbility: async (context, pay) => {
